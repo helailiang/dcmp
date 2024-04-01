@@ -16,4 +16,5 @@
 
 可以参考`fabric-gateway`官方说明。<a href="https://hyperledger-fabric.readthedocs.io/en/latest/gateway.html" target="_blank">了解更多</a>
 
-具体例子可以参考：
+具体例子可以参考：https://github.com/helailiang/dcmp/tree/main/dcmp-gateway
+
