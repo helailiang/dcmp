@@ -22,12 +22,12 @@ import (
 )
 
 const (
-	mspID        = "Myorg1MSP"
-	certPath     = "certs/7c663c1a986a137dde3ac59e1fad8132b4cb7854/msp/signcerts/cert.pem"
-	keyPath      = "certs/7c663c1a986a137dde3ac59e1fad8132b4cb7854/msp/keystore"
-	tlsCertPath  = "certs/7c663c1a986a137dde3ac59e1fad8132b4cb7854/tls/tlsintermediatecerts/tls-ca-myorg1--0.pem"
+	mspID        = "XhhhhMSP"
+	certPath     = "certs/c8ea670720fc4bd6851abe97bc8e4b20deed6ca/msp/signcerts/cert.pem"
+	keyPath      = "certs/c8ea670720fc4bd6851abe97bc8e4b20deed6ca/msp/keystore"
+	tlsCertPath  = "certs/c8ea670720fc4bd6851abe97bc8e4b20deed6ca/tls/tlsintermediatecerts/tls-ca-xhhhh--0.pem"
 	peerEndpoint = "192.168.1.66:32444"
-	gatewayPeer  = "peer1.myorg1-no2024032800012.athens.bsnbase.com"
+	gatewayPeer  = "peer1.xhhhh-5ce11943b4e5e13.athens.bsnbase.com"
 )
 
 var now = time.Now()
@@ -59,16 +59,17 @@ func main() {
 	defer gw.Close()
 
 	// Override default values for chaincode and channel name as they may differ in testing contexts.
-	chaincodeName := "dcmpchanincode"
+	chaincodeName := "sacc"
 	if ccname := os.Getenv("CHAINCODE_NAME"); ccname != "" {
 		chaincodeName = ccname
 	}
 
-	channelName := "mychannel01"
+	channelName := "mychannel"
 	if cname := os.Getenv("CHANNEL_NAME"); cname != "" {
 		channelName = cname
 	}
 	network := gw.GetNetwork(channelName)
+
 	contract := network.GetContract(chaincodeName)
 
 	createAsset(contract)
@@ -149,7 +150,7 @@ func newSign() identity.Sign {
 func getAllAssets(contract *client.Contract) {
 	fmt.Println("\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger")
 
-	evaluateResult, err := contract.EvaluateTransaction("Get", "Tom")
+	evaluateResult, err := contract.EvaluateTransaction("Get", "rrr")
 	if err != nil {
 		panic(fmt.Errorf("failed to evaluate transaction: %w", err))
 	}
@@ -162,7 +163,7 @@ func getAllAssets(contract *client.Contract) {
 func createAsset(contract *client.Contract) {
 	fmt.Printf("\n--> 调用set() \n")
 
-	_, err := contract.SubmitTransaction("set", "Tom", "38800")
+	_, err := contract.SubmitTransaction("set", "rrr", "38800")
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}
