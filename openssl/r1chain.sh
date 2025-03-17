@@ -74,7 +74,7 @@ openssl x509 -req -in ca/intermediate/csr/intermediate.csr \
 # ================== 证书链处理 ==================
 echo "构建证书链..."
 cp ca/root/certs/root.crt ca/intermediate/certs/
-cat ca/root/certs/root.crt ca/intermediate/certs/intermediate.crt > ca/intermediate/certs/chain.crt
+cat  ca/intermediate/certs/intermediate.crt ca/root/certs/root.crt> ca/intermediate/certs/chain.crt
 
 # ================== 验证操作 ==================
 echo "验证证书链:"
