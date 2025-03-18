@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# ================== 参数校验 ==================
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <根证书CN> <中间证书CN>"
+    echo "示例: $0 'MyRoot CA' 'MyIntermediate CA'"
+    exit 1
+fi
+
+ROOT_CN="$1"
+INTERMEDIATE_CN="$2"
 # ================== 目录结构初始化 ==================
 echo "初始化目录结构..."
 mkdir -p ca/root/{certs,private,crl} ca/intermediate/{certs,private,csr}
@@ -21,7 +30,7 @@ ST = Beijing
 L = Beijing
 O = MyRoot CA
 OU = Security
-CN = MyRoot CA
+CN = ${ROOT_CN}
 
 [ v3_ca ]
 basicConstraints = critical,CA:TRUE,pathlen:2
@@ -49,7 +58,7 @@ ST = Beijing
 L = Beijing
 O = MyIntermediate CA
 OU = Security
-CN = MyIntermediate CA
+CN = ${INTERMEDIATE_CN}
 
 [ v3_intermediate_ca ]
 basicConstraints = critical,CA:TRUE,pathlen:1
@@ -84,7 +93,14 @@ echo "证书层级结构:"
 openssl x509 -in ca/root/certs/root.crt -noout -text | grep -A1 "X509v3 Basic Constraints"
 openssl x509 -in ca/intermediate/certs/intermediate.crt -noout -text | grep -A1 "X509v3 Basic Constraints"
 
-echo "操作完成！证书文件位置:"
-echo "根证书: ca/root/certs/root.crt"
-echo "中间证书: ca/intermediate/certs/intermediate.crt"
-echo "证书链: ca/intermediate/certs/chain.crt"
+echo -e "\n证书信息:"
+echo "根证书 CN: $ROOT_CN"
+openssl x509 -in ca/root/certs/root.crt -noout -subject -issuer
+
+echo -e "\n中间证书 CN: $INTERMEDIATE_CN"
+openssl x509 -in ca/intermediate/certs/intermediate.crt -noout -subject -issuer
+
+echo -e "\n操作完成！证书文件位置:"
+echo -e "\n根证书: ca/root/certs/root.crt"
+echo -e "\n中间证书: ca/intermediate/certs/intermediate.crt"
+echo -e "\n证书链: ca/intermediate/certs/chain.crt"
