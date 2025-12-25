@@ -17,17 +17,21 @@ import (
 
 	"github.com/hyperledger/fabric-gateway/pkg/client"
 	"github.com/hyperledger/fabric-gateway/pkg/identity"
+	"github.com/hyperledger/fabric-protos-go-apiv2/gateway"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/status"
 )
 
+// 必须 用户密钥对 + tls证书
 const (
-	mspID        = "XhhhhMSP"
-	certPath     = "certs/c8ea670720fc4bd6851abe97bc8e4b20deed6ca/msp/signcerts/cert.pem"
-	keyPath      = "certs/c8ea670720fc4bd6851abe97bc8e4b20deed6ca/msp/keystore"
-	tlsCertPath  = "certs/c8ea670720fc4bd6851abe97bc8e4b20deed6ca/tls/tlsintermediatecerts/tls-ca-xhhhh--0.pem"
-	peerEndpoint = "192.168.1.66:32444"
-	gatewayPeer  = "peer1.xhhhh-5ce11943b4e5e13.athens.bsnbase.com"
+	mspID    = "MynodeMSP"
+	certPath = "certs/hlluser1/msp/signcerts/cert.pem"
+	keyPath  = "certs/hlluser1/msp/keystore"
+	//tls 使用中间ica证书  ica_mynode_hllcert003_sys00294
+	tlsCertPath  = "certs/hlluser1/tls/tlsintermediatecerts/tls-ca-xhhhh--0.pem"
+	peerEndpoint = "103.214.77.84:32444"
+	gatewayPeer  = "peer2.mynode.hllcert003.sbpsuite-np.hksarg"
 )
 
 var now = time.Now()
@@ -64,7 +68,7 @@ func main() {
 		chaincodeName = ccname
 	}
 
-	channelName := "mychannel"
+	channelName := "bsnchannel"
 	if cname := os.Getenv("CHANNEL_NAME"); cname != "" {
 		channelName = cname
 	}
@@ -163,9 +167,21 @@ func getAllAssets(contract *client.Contract) {
 func createAsset(contract *client.Contract) {
 	fmt.Printf("\n--> 调用set() \n")
 
-	_, err := contract.SubmitTransaction("set", "rrr", "38800")
+	_, err := contract.SubmitTransaction("set", "rrr", "388001")
 	if err != nil {
-		panic(fmt.Errorf("failed to submit transaction: %w", err))
+		s := status.Convert(err)
+		fmt.Printf("Error Code: %s\n", s.Code())
+		fmt.Printf("Error Desc: %s\n", s.Message())
+
+		// 获取详细的背书失败原因
+		for _, detail := range s.Details() {
+			switch d := detail.(type) {
+			case *gateway.ErrorDetail:
+				fmt.Printf("Endorse Error from Peer: %s, Message: %s\n", d.Address, d.Message)
+			}
+		}
+		return
+		//panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}
 
 	fmt.Printf("*** Transaction committed successfully\n")
